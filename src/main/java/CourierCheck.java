@@ -8,7 +8,7 @@ public class CourierCheck {
 
     public void courierCreated(ValidatableResponse response) {
         response.assertThat()
-                .statusCode(200)
+                .statusCode(201)
                 .body("ok", is(true));
     }
 

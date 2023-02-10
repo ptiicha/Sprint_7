@@ -3,8 +3,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static io.restassured.RestAssured.*;
+import org.junit.Assert.*;
 import io.restassured.response.ValidatableResponse;
-import Courier;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,11 +16,80 @@ public class testCourier {
         io.restassured.RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru/";
     }
 
-@Test
-Courier courier = new Courier ("login", "123qwerty", "Иванов");
+@org.junit.Test
     public void courierCreated() {
-        given()
-                .get("/api/users/me")
-                .then().assertThat().body("data.name", equalTo("Тестировщик"));
+    String json = "{\"login\": \"login\", \"password\": \"123qwerty\", \"lastName\": \"Иванов\"}";
+    io.restassured.response.Response response =
+            given()
+                    .header("Content-type", "application/json")
+                    .and()
+                    .body(json)
+                    .when()
+                    .post("/api/v1/courier");
+    response.assertThat().body("ok");
+}
+    @org.junit.Test
+    public void creationSameCourierFailed () {
+        String json = "{\"login\": \"login\", \"password\": \"123qwerty\", \"lastName\": \"Иванов\"}";
+        io.restassured.response.Response response =
+                given()
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(json)
+                        .when()
+                        .post("/api/v1/courier");
+        response.assertThat().body("message").and().statusCode(409);
+    }
 
+    @org.junit.Test
+    public void loggedIn () {
+        String json = "{\"login\": \"login\", \"password\": \"123qwerty\"}";
+        io.restassured.response.Response response =
+                given()
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(json)
+                        .when()
+                        .post("/api/v1/courier/login");
+        response.assertThat().body("id").and().statusCode(200);
+    }
+
+    @org.junit.Test
+    public void loggedIn () {
+        String json = "{\"login\": \"login\", \"password\": \"123qwerty\"}";
+        io.restassured.response.Response response =
+                given()
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(json)
+                        .when()
+                        .post("/api/v1/courier/login");
+        response.assertThat().body("id").and().statusCode(200);
+    }
+
+    @org.junit.Test
+    public void notLoggedRequiredFields () {
+        String json = "{\"login\": \" \", \"password\": \"123qwerty\"}";
+        io.restassured.response.Response response =
+                given()
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(json)
+                        .when()
+                        .post("/api/v1/courier/login");
+        response.assertThat().body("message").and().statusCode(400);
+    }
+
+    @org.junit.Test
+    public void notLoggedRequiredFields () {
+        String json = "{\"login\": \"wrong login\", \"password\": \"123qwerty\"}";
+        io.restassured.response.Response response =
+                given()
+                        .header("Content-type", "application/json")
+                        .and()
+                        .body(json)
+                        .when()
+                        .post("/api/v1/courier/login");
+        response.assertThat().body("message").and().statusCode(404);
+    }
 }

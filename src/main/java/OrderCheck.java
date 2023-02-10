@@ -9,9 +9,9 @@ public class OrderCheck {
                 .body("track", greaterThan(0));
     }
 
-    public void chooseColor(ValidatableResponse response) {
+    public void cancelOrder(ValidatableResponse response) {
         response.assertThat()
                 .statusCode(200)
-                .body("BLACK", is(true));
+                .body("ok", is(true));
     }
 }
