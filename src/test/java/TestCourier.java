@@ -1,15 +1,9 @@
-import io.restassured.response.ValidatableResponse;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static io.restassured.RestAssured.*;
-import org.junit.Assert.*;
-import io.restassured.response.ValidatableResponse;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
-public class testCourier {
+import org.junit.Before;
+
+public class TestCourier {
 
     @Before
     public void setUp() {
