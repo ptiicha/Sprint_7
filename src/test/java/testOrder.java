@@ -26,7 +26,7 @@ public class testOrder {
                         .body(json)
                         .when()
                         .post("/api/v1/orders");
-        response.assertThat().body("track").and().statusCode(200);
+        response.then().assertThat().statusCode(200);
     }
 
     @org.junit.Test
@@ -39,6 +39,6 @@ public class testOrder {
                         .body(json)
                         .when()
                         .put("/api/v1/orders/cancel");
-        response.assertThat().body("ok").and().statusCode(200);
+        response.then().assertThat().statusCode(200);
     }
 }

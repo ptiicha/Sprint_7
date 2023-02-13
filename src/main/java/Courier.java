@@ -36,8 +36,5 @@ public class Courier {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-    public <T, R> io.restassured.response.ValidatableResponseOptions<T,R> login(CourierLogin from) {
-    }
 }
 

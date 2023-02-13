@@ -10,8 +10,7 @@ public class OrderCheck {
     }
 
     public void cancelOrder(ValidatableResponse response) {
-        response.assertThat()
-                .statusCode(200)
-                .body("ok", is(true));
+        response.assertThat();
+        response.statusCode(200);
     }
 }

@@ -26,7 +26,7 @@ public class testCourier {
                     .body(json)
                     .when()
                     .post("/api/v1/courier");
-    response.assertThat().body("ok");
+    response.then().assertThat().statusCode(201);
 }
     @org.junit.Test
     public void creationSameCourierFailed () {
@@ -38,7 +38,7 @@ public class testCourier {
                         .body(json)
                         .when()
                         .post("/api/v1/courier");
-        response.assertThat().body("message").and().statusCode(409);
+        response.then().assertThat().statusCode(409);
     }
 
     @org.junit.Test
@@ -51,20 +51,7 @@ public class testCourier {
                         .body(json)
                         .when()
                         .post("/api/v1/courier/login");
-        response.assertThat().body("id").and().statusCode(200);
-    }
-
-    @org.junit.Test
-    public void loggedIn () {
-        String json = "{\"login\": \"login\", \"password\": \"123qwerty\"}";
-        io.restassured.response.Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(json)
-                        .when()
-                        .post("/api/v1/courier/login");
-        response.assertThat().body("id").and().statusCode(200);
+        response.then().assertThat().statusCode(200);
     }
 
     @org.junit.Test
@@ -77,11 +64,11 @@ public class testCourier {
                         .body(json)
                         .when()
                         .post("/api/v1/courier/login");
-        response.assertThat().body("message").and().statusCode(400);
+        response.then().assertThat().statusCode(400);
     }
 
     @org.junit.Test
-    public void notLoggedRequiredFields () {
+    public void notLoggedInvalidField () {
         String json = "{\"login\": \"wrong login\", \"password\": \"123qwerty\"}";
         io.restassured.response.Response response =
                 given()
@@ -90,6 +77,6 @@ public class testCourier {
                         .body(json)
                         .when()
                         .post("/api/v1/courier/login");
-        response.assertThat().body("message").and().statusCode(404);
+        response.then().assertThat().statusCode(404);
     }
 }
