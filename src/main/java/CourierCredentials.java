@@ -1,17 +1,14 @@
-public class CourierLogin {
+public class CourierCredentials {
     private String login;
     private String password;
 
-    public CourierLogin(String login, String password) {
+    public CourierCredentials(String login, String password) {
         this.login = login;
         this.password = password;
     }
 
-    public CourierLogin() {
-    }
-
-    public static CourierLogin from(Courier courier) {
-        return new CourierLogin(courier.getLogin(), courier.getPassword());
+    public static CourierCredentials from(Courier courier) {
+        return new CourierCredentials(courier.getLogin(), courier.getPassword());
     }
 
     public String getLogin() {
@@ -28,5 +25,8 @@ public class CourierLogin {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public CourierCredentials() {
     }
 }

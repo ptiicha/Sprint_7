@@ -1,76 +1,73 @@
-import static org.hamcrest.Matchers.notNullValue;
-import static io.restassured.RestAssured.*;
-
+import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 
 public class TestCourier {
+    private int courierId;
+    private CourierSettings courierSet;
+    private Courier courierNew;
+    private CourierCheck check;
 
     @Before
     public void setUp() {
         io.restassured.RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru/";
+        check = new CourierCheck();
+        courierSet = new CourierSettings();
+        courierNew = CourierGenerator.getRandom();
+        }
+
+    @After
+    public void cleanUp() {
+        if (courierId > 0) {
+            CourierSettings.delete(courierId);
+        }
     }
 
-@org.junit.Test
+@Test
     public void courierCreated() {
-    String json = "{\"login\": \"login\", \"password\": \"123qwerty\", \"lastName\": \"Иванов\"}";
-    io.restassured.response.Response response =
-            given()
-                    .header("Content-type", "application/json")
-                    .and()
-                    .body(json)
-                    .when()
-                    .post("/api/v1/courier");
-    response.then().assertThat().statusCode(201);
+    ValidatableResponse createResponse = courierSet.create(courierNew);
+    check.courierCreated(createResponse);
+    courierId = courierSet.login(CourierCredentials.from(courierNew)).extract().path("id");
 }
-    @org.junit.Test
+    @Test
     public void creationSameCourierFailed () {
-        String json = "{\"login\": \"login\", \"password\": \"123qwerty\", \"lastName\": \"Иванов\"}";
-        io.restassured.response.Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(json)
-                        .when()
-                        .post("/api/v1/courier");
-        response.then().assertThat().statusCode(409);
+        courierNew.setLogin("SameLogin");
+        courierSet.create(courierNew);
+        Courier secondCourier = CourierGenerator.getRandom();
+        secondCourier.setLogin("SameLogin");
+        ValidatableResponse createResponse = courierSet.create(secondCourier);
+        check.creationSameCourierFailed(createResponse);
+
+        courierId = courierSet.login(CourierCredentials.from(courierNew)).extract().path("id");
     }
 
-    @org.junit.Test
+    @Test
     public void loggedIn () {
-        String json = "{\"login\": \"login\", \"password\": \"123qwerty\"}";
-        io.restassured.response.Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(json)
-                        .when()
-                        .post("/api/v1/courier/login");
-        response.then().assertThat().statusCode(200);
+        courierSet.create(courierNew);
+        CourierCredentials credentials = CourierCredentials.from(courierNew);
+        ValidatableResponse loginResponse = courierSet.login(credentials);
+        check.loggedIn(loginResponse);
+        courierId = loginResponse.extract().path("id");
     }
 
-    @org.junit.Test
+    @Test
     public void notLoggedRequiredFields () {
-        String json = "{\"login\": \" \", \"password\": \"123qwerty\"}";
-        io.restassured.response.Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(json)
-                        .when()
-                        .post("/api/v1/courier/login");
-        response.then().assertThat().statusCode(400);
+        courierSet.create(courierNew);
+        courierId = courierSet.login(CourierCredentials.from(courierNew)).extract().path("id");
+        CourierCredentials credentials = CourierCredentials.from(courierNew);
+        credentials.setLogin(null);
+        ValidatableResponse loginResponse = courierSet.login(credentials);
+        check.notLoggedRequiredFields(loginResponse);
     }
 
-    @org.junit.Test
+    @Test
     public void notLoggedInvalidField () {
-        String json = "{\"login\": \"wrong login\", \"password\": \"123qwerty\"}";
-        io.restassured.response.Response response =
-                given()
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(json)
-                        .when()
-                        .post("/api/v1/courier/login");
-        response.then().assertThat().statusCode(404);
+        courierSet.create(courierNew);
+        courierId = courierSet.login(CourierCredentials.from(courierNew)).extract().path("id");
+        CourierCredentials credentials = CourierCredentials.from(courierNew);
+        credentials.setLogin("Wrong login");
+        ValidatableResponse loginResponse = courierSet.login(credentials);
+        check.notLoggedInvalidField(loginResponse);
     }
 }
