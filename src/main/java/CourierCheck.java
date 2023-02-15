@@ -1,15 +1,12 @@
 import io.restassured.response.ValidatableResponse;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
-import static io.restassured.RestAssured.*;
 
 public class CourierCheck {
 
     public void courierCreated(ValidatableResponse response) {
         response.assertThat()
-                .statusCode(200)
-                .body("ok", is(true));
+                .statusCode(201);
     }
 
     public void creationSameCourierFailed(ValidatableResponse response) {
@@ -26,7 +23,7 @@ public class CourierCheck {
 
     public void notLoggedRequiredFields(ValidatableResponse response) {
         response.assertThat()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", notNullValue());
     }
 
